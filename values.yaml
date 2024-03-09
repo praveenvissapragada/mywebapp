@@ -1,0 +1,4 @@
+webApp:
+  image: praveenvissapragada/web-app:v5
+redis:
+  image: redis:latest

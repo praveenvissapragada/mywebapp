@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        // Replace with your actual values (store them securely)
+        GIT_URL = 'https://github.com/praveenvissapragada/mywebapp.git'
+        GKE_CLUSTER_NAME = 'cluster-1'  // Optional, use default if omitted
+        // Credentials ID for accessing GKE cluster (replace with your actual ID)
+        GKE_CREDENTIALS_ID = 'gke-credentials-id'
+        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+    }
+
+    stages {
+        stage('Cleanup') {
+            steps {
+                script {
+                    // Clean up the workspace
+                    deleteDir() 
+                }
+            }
+        }
+        stage('Checkout Code') {
+            steps {
+                git branch: 'master', url: "${env.GIT_URL}"
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'cd build && docker build -t praveenvissapragada/web-app:$BUILD_NUMBER .'
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'username', passwordVariable: 'password')]) {
+                    sh "docker login -u $username -p $password"
+                    sh "docker tag $username/web-app:$BUILD_NUMBER $username/web-app:latest"
+                    sh "docker push $username/web-app:$BUILD_NUMBER"
+                    sh "docker push $username/web-app:latest"
+                }
+            }
+        }
+
+        stage('Deploy to GKE') {
+            steps {
+                withCredentials([file(credentialsId: 'gke-credentials-id', variable: 'SERVICE_ACCOUNT_KEY')]) {
+                    sh "gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY"
+                    sh "gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project deel-hometask"
+                    sh "helm package deployment && cd deployment && helm upgrade mywebapp ."
+                }
+            }
+        }
+    }
+}

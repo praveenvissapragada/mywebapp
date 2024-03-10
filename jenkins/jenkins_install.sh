@@ -39,3 +39,6 @@ sudo apt-get install helm -y
 
 sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
+
+# gke-gcloud-auth-plugin installation
+sudo  apt-get install google-cloud-sdk-gke-gcloud-auth-plugin -y

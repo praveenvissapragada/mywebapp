@@ -13,7 +13,7 @@
    (i) Added Docker Hub credentials as Username and Password type. Credential ID should be "docker-credentials-id".
    (ii) Added Google Cloud service account credentials as Secret text, uploaded the JSON which was downloaded earlier while creating the service account. Credential ID should be "gke-credentials-id".
 10. On the Jenkins dashboard page, clicked on "New Item", gave the name of the pipeline job, and selected "Pipeline" and clicked "OK".
-11. Copied the contents of the "Jenkinsfile" present in the "jenkins" folder to "pipeline syntax" and saved the job.
+11. Copied the contents of the "Jenkinsfile.jenkinsfile" present in the "jenkins" folder to "pipeline syntax" and saved the job.
 12. Ran the job by clicking on the "Build now" option present in the left side panel.
 13. Went back to Google console and connected to the k8s cluster using Cloud Shell.
 14. Connected to the k8s cluster by executing the following command "gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project deel-hometask".
